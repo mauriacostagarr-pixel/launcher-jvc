@@ -6,6 +6,8 @@ import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.tv.TvContract
 import android.media.tv.TvInputManager
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent
@@ -48,6 +50,13 @@ class LauncherController(private val ctx: Context) {
     private val pressed = HashSet<Int>()
     private var longFired = false
     private var lastNav = 0L
+    private val handler = Handler(Looper.getMainLooper())
+    private val longTask = Runnable {
+        if (!longFired) {
+            longFired = true
+            onLongPress()
+        }
+    }
 
     init {
         syncVolume(false)
@@ -120,6 +129,8 @@ class LauncherController(private val ctx: Context) {
         homeIds = l
         prefs.home = l
         focus = focus.coerceIn(0, cardCount - 1)
+        toast("Quitada del inicio")
+        if (homeApps.isEmpty()) editing = false
     }
 
     private fun moveFocused(dir: Int) {
@@ -346,9 +357,8 @@ class LauncherController(private val ctx: Context) {
             if (repeat == 0) {
                 longFired = false
                 pressed.add(code)
-            } else if (!longFired) {
-                longFired = true
-                onLongPress()
+                handler.removeCallbacks(longTask)
+                handler.postDelayed(longTask, 600)
             }
             return true
         }
@@ -378,6 +388,7 @@ class LauncherController(private val ctx: Context) {
     fun onKeyUp(code: Int): Boolean {
         if (!pressed.remove(code)) return false
         if (isCenter(code)) {
+            handler.removeCallbacks(longTask)
             if (!longFired) onShortPress()
             longFired = false
         }
@@ -407,8 +418,11 @@ class LauncherController(private val ctx: Context) {
                 }
             }
             else -> {
-                if (dx != 0) {
-                    if (editing) moveFocused(dx) else focus = (focus + dx).coerceIn(0, cardCount - 1)
+                if (editing) {
+                    if (dx != 0) moveFocused(dx)
+                    if (dy < 0) removeFocused()
+                } else if (dx != 0) {
+                    focus = (focus + dx).coerceIn(0, cardCount - 1)
                 }
             }
         }
@@ -432,7 +446,7 @@ class LauncherController(private val ctx: Context) {
         when {
             panelOpen -> rows(panelPage).getOrNull(panelFocus)?.action?.invoke()
             screen == Screen.Apps -> apps.getOrNull(gridFocus)?.let { launch(it.pkg) }
-            editing -> if (focus < homeApps.size) removeFocused()
+            editing -> editing = false
             else -> activateCard()
         }
     }

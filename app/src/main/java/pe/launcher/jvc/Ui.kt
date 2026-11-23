@@ -140,7 +140,7 @@ private fun HomeLayer(c: LauncherController, pal: Pal, k: Float, alpha: Float) {
         // Saludo
         Column(Modifier.padding(start = (72 * k).dp, top = (52 * k).dp)) {
             T(greeting(h), 30f * k, pal.fg, FontWeight.SemiBold)
-            T(if (c.editing) "Modo edición · OK quita · ◄ ► mueve · Atrás termina" else "Mauricio", 20f * k, pal.muted)
+            T(if (c.editing) "Editando · ◄ ► mover · ▲ quitar · OK termina" else "Mauricio", 20f * k, pal.muted)
         }
         // Reloj
         Column(
