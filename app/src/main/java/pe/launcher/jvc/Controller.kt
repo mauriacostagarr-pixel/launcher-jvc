@@ -192,12 +192,10 @@ class LauncherController(private val ctx: Context) {
                 motion = !motion
                 prefs.motion = motion
             },
-            PanelRow("Barra de volumen propia", if (customVolume) "Activada" else "Desactivada") {
-                customVolume = !customVolume
-                prefs.customVolume = customVolume
-            },
+            PanelRow("Activar barra de volumen global", "›") { openAccessibility() },
             PanelRow("Sonido", "›") { openPage(1) },
             PanelRow("Entradas", "›") { openPage(2) },
+            PanelRow("Hacer launcher principal", "›") { openHomeSettings() },
             PanelRow("Editar inicio", "") {
                 panelOpen = false
                 screen = Screen.Home
@@ -234,6 +232,20 @@ class LauncherController(private val ctx: Context) {
         panelOpen = false
         if (!tryStart(Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) && !tryStart(Intent(Settings.ACTION_SETTINGS))) {
             toast("No se pudo abrir Bluetooth")
+        }
+    }
+
+    private fun openAccessibility() {
+        panelOpen = false
+        if (!tryStart(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) && !tryStart(Intent(Settings.ACTION_SETTINGS))) {
+            toast("No se pudo abrir Accesibilidad")
+        }
+    }
+
+    private fun openHomeSettings() {
+        panelOpen = false
+        if (!tryStart(Intent(Settings.ACTION_HOME_SETTINGS))) {
+            toast("Tu TV no tiene esa opción: se hace con ADB")
         }
     }
 

@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -42,10 +43,10 @@ private fun gradB(a: Color, b: Color, c: Color, w: Float): Brush = Brush.horizon
 
 /** Trazo ancho con bordes suaves (simula el desenfoque apilando trazos cada vez más finos). */
 private fun DrawScope.softStroke(path: Path, brush: Brush, width: Float, alpha: Float) {
-    val steps = 7
+    val steps = 5
     for (i in 0 until steps) {
         val f = 1f - i.toFloat() / steps
-        drawPath(path, brush, alpha = alpha * 0.30f, style = Stroke(width * f, cap = StrokeCap.Round))
+        drawPath(path, brush, alpha = alpha * 0.38f, style = Stroke(width * f, cap = StrokeCap.Round))
     }
 }
 
@@ -91,6 +92,7 @@ fun Estelas(
         // Resplandor superior derecho
         Canvas(
             Modifier.fillMaxSize().graphicsLayer {
+                compositingStrategy = CompositingStrategy.Offscreen
                 val k = size.width / 1280f
                 translationX = ((-90f * s + 6f * f) + (-110f * dC * m)) * k
                 translationY = ((70f * s) + (36f * dC * m)) * k
@@ -111,6 +113,7 @@ fun Estelas(
         // Cinta principal
         Canvas(
             Modifier.fillMaxSize().graphicsLayer {
+                compositingStrategy = CompositingStrategy.Offscreen
                 val k = size.width / 1280f
                 translationX = ((-150f * s + 14f * f) + (-110f * dA * m)) * k
                 translationY = ((-70f * s) + (36f * dA * m)) * k
@@ -145,6 +148,7 @@ fun Estelas(
         // Cinta inferior
         Canvas(
             Modifier.fillMaxSize().graphicsLayer {
+                compositingStrategy = CompositingStrategy.Offscreen
                 val k = size.width / 1280f
                 translationX = ((110f * s - 22f * f) + (90f * dB * m)) * k
                 translationY = ((50f * s) + (-44f * dB * m)) * k

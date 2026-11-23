@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Launcher</string>
+    <string name="volume_service_label">Launcher: barra de volumen</string>
+    <string name="volume_service_desc">Muestra la barra de volumen del launcher sobre cualquier app. Solo lee los botones de volumen.</string>
 </resources>

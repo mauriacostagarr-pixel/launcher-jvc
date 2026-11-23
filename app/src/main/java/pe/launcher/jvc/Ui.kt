@@ -36,6 +36,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -173,7 +175,7 @@ private fun HomeLayer(c: LauncherController, pal: Pal, k: Float, alpha: Float) {
         ) {
             Row(
                 Modifier.wrapContentWidth(Alignment.Start, unbounded = true)
-                    .offset { IntOffset(-(scrollDp * density.density).roundToInt(), 0) }
+                    .graphicsLayer { translationX = -scrollDp * this.density }
                     .padding(top = (40 * k).dp),
                 horizontalArrangement = Arrangement.spacedBy(gap.dp),
             ) {
@@ -211,16 +213,30 @@ private fun Card(
     val w = (288 * k).dp
     val hgt = (144 * k).dp
     Box(Modifier.width(w).height(hgt + (60 * k).dp)) {
-        // Reflejo / resplandor del color de la app: solo en la seleccionada
+        // Reflejo difuso del color de la app: solo en la seleccionada
         Box(
-            Modifier.align(Alignment.TopStart)
-                .offset(x = w * 0.06f, y = hgt - (6 * k).dp)
-                .width(w * 0.88f).height((54 * k).dp)
-                .graphicsLayer { alpha = glow * 0.85f; scaleX = 1f + 0.08f * lift }
-                .background(
-                    Brush.verticalGradient(listOf(accent.copy(alpha = 0.75f), accent.copy(alpha = 0.25f), Color.Transparent)),
-                    RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp),
-                )
+            Modifier.matchParentSize()
+                .graphicsLayer { alpha = glow * 0.95f }
+                .drawBehind {
+                    val cx = size.width / 2f
+                    val cy = (144f * k + 4f * k) * density
+                    val r = size.width * 0.66f
+                    scale(1f, 0.42f, pivot = Offset(cx, cy)) {
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                0f to accent.copy(alpha = 0.85f),
+                                0.25f to accent.copy(alpha = 0.55f),
+                                0.55f to accent.copy(alpha = 0.2f),
+                                0.8f to accent.copy(alpha = 0.05f),
+                                1f to accent.copy(alpha = 0f),
+                                center = Offset(cx, cy),
+                                radius = r,
+                            ),
+                            radius = r,
+                            center = Offset(cx, cy),
+                        )
+                    }
+                }
         )
         Box(
             Modifier.size(w, hgt)
@@ -339,7 +355,7 @@ private fun PanelLayer(c: LauncherController, pal: Pal, k: Float, alpha: Float) 
                         .graphicsLayer { scaleX = 1f + 0.02f * s; scaleY = 1f + 0.02f * s }
                         .clip(RoundedCornerShape((16 * k).dp))
                         .background(if (f) pal.focusBg else pal.pill)
-                        .padding(horizontal = (20 * k).dp, vertical = (16 * k).dp),
+                        .padding(horizontal = (20 * k).dp, vertical = (12 * k).dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
