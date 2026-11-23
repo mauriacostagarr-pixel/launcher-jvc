@@ -65,7 +65,7 @@ class LauncherController(private val ctx: Context) {
     val cardCount: Int
         get() = homeApps.size + 2
 
-    fun setApps(list: List<AppEntry>) {
+    fun updateApps(list: List<AppEntry>) {
         val sorted = list.sortedBy { it.label.lowercase() }
         apps = sorted
         val byPkg = sorted.associateBy { it.pkg }

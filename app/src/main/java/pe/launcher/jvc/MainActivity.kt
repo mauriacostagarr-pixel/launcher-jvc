@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
     private fun reloadApps() {
         Thread {
             val list = AppRepository.load(this)
-            runOnUiThread { controller.setApps(list) }
+            runOnUiThread { controller.updateApps(list) }
         }.start()
     }
 
